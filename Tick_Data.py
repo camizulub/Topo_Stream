@@ -1,8 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta 
-import os
 import sys
-import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from ib_insync import *
 
