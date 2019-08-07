@@ -58,18 +58,18 @@ class Topo:
         saves the dataframes. If is an opening starts recording the data.'''
         self.now = datetime.now()
         #Market Intraday Close
-        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 9)\
-             & (self.now.minute == 51) & (self.now.second == 20):
+        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 15)\
+             & (self.now.minute == 14) & (self.now.second == 0):
             sun_open.pause()
             self.cancelation()
             self.savedata()
         #Market Intraday Open
-        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 9)\
-             & (self.now.minute == 51) & (self.now.second == 50):
+        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 15)\
+             & (self.now.minute == 31) & (self.now.second == 0):
             self.empty_df()
             self.recorder()
         #Market Friday Close
-        elif (self.now.weekday()==2) & (self.now.hour == 9) & (self.now.minute == 53):
+        elif (self.now.weekday()==4) & (self.now.hour == 15) & (self.now.minute == 59):
             self.cancelation()
             self.savedata()
             ib.disconnect()
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
     time_job = scheduler.add_job(juan.current_time, 'interval', seconds=1)
-    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=2, hour=9, minute=51) #Market Sunday Open
+    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=6, hour=17, minute=0) #Market Sunday Open
     scheduler.start()
 
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
