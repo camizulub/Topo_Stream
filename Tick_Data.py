@@ -1,3 +1,12 @@
+#
+# Python Script
+# for recording tick data
+# for Interactive Brokers
+#
+# QSociety
+# (c) Camilo Zuluaga
+# camilo.zuluaga.trader@gmail.com
+#
 import pandas as pd
 from datetime import datetime, timedelta 
 import sys
@@ -8,6 +17,7 @@ from ib_insync import *
 class Topo:
 
     def __init__(self):
+        '''Initializes the topo atribuites.'''
         self.clientid = input('\tID: ')
         self.ticket = input('\tTicket: ')
         self.last = input('\tContract Expiration: ')
@@ -16,31 +26,34 @@ class Topo:
         self.days= {0: 'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 6:'Sunday'}
 
     def connect(self):
+        '''Connects to IB Gateway or TWS.'''
         ib.connect('127.0.0.1', 7497, clientId=self.clientid)
 
     def empty_df(self):
+        '''Creates and empty dataframe.'''
         self.df= pd.DataFrame(columns=['time','bid', 'bidSize', 'ask', 'askSize'])
 
     def onPendingTickers(self, ticker):
-        """When the request of real time data is updated this function stores the date of the returned data,
-        and creates a new Data Frame for 5 secs time bars"""
-
-    #global df, df2
+        """Creates a intermedian dataframe and filter a list of tickers then add them to a new dataframe."""
         self.df2 = util.df(ticker)
         self.df = self.df.append(self.df2.loc[:,['time','bid', 'bidSize', 'ask', 'askSize']])
 
     def recorder(self):
-        #global ticker
+        """Request a live tick-by-tick updates."""
         self.ticker = ib.reqTickByTickData(self.contract, 'BidAsk')
         ib.pendingTickersEvent += self.onPendingTickers
 
     def cancelation(self):
+        '''Stops the live tick subscriptions.'''
         ib.cancelTickByTickData(self.ticker.contract, 'BidAsk')
 
     def savedata(self):
+        '''Saves the dataframe in the specified location.'''
         self.df.to_csv('C:/Users/MiloZB/Desktop/ES_{}_{}_{}.csv'.format(self.days[self.now.weekday()],self.now.hour,self.now.minute))
 
     def current_time(self):
+        '''Checks if the current time is an opening or closing trading hour. Then, if is a closing cancel the suscription for data and
+        saves the dataframes. If is an opening starts recording the data.'''
         self.now = datetime.now()
         #Market Intraday Close
         if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 8) & (self.now.minute == 16) & (self.now.second == 20):
@@ -64,7 +77,7 @@ class Topo:
 
 if __name__ == '__main__':
 
-    ib = IB()
+    #ib = IB()
     juan = Topo()
 
     juan.connect()
