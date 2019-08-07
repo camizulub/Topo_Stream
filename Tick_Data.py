@@ -51,7 +51,7 @@ class Topo:
 
     def savedata(self):
         '''Saves the dataframe in the specified location.'''
-        self.df.to_csv('C:/Users/MiloZB/Desktop/ES_{}_{}_{}.csv'.format(self.days[self.now.weekday()],self.now.hour,self.now.minute))
+        self.df.to_csv('C:/Users/MiloZB/Desktop/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
 
     def current_time(self):
         '''Checks if the current time is an opening or closing trading hour. Then, if is a closing cancel the suscription for data and
