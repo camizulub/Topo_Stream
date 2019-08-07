@@ -96,7 +96,7 @@ if __name__ == '__main__':
     try:
         # This is here to simulate application activity (which keeps the main thread alive).
         while True:
-            ib.sleep(1)
+            ib.sleep(0)
     except (KeyboardInterrupt, SystemExit):
         # Not strictly necessary if daemonic mode is enabled but should be done if possible
         scheduler.shutdown()
