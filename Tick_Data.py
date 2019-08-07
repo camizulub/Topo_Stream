@@ -47,7 +47,7 @@ class Topo:
 
     def cancelation(self):
         '''Stops the live tick subscriptions.'''
-        ib.cancelTickByTickData(self.ticker.contract, 'BidAsk')
+        ib.cancelTickByTickData(self.ticker, self.contract, 'BidAsk')
 
     def savedata(self):
         '''Saves the dataframe in the specified location.'''
