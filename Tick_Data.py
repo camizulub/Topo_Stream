@@ -20,14 +20,16 @@ class Topo:
         '''Initializes the topo atribuites.'''
         self.clientid = input('\tID: ')
         self.ticket = input('\tTicket: ')
-        self.last = input('\tContract Expiration: ')
+        #self.last = input('\tContract Expiration: ')
         self.exch = input('\tExchange: ')
-        self.contract = Future(self.ticket, self.last, self.exch)
+        self.contract = Contract(secType='CONTFUT', exchange=self.exch, symbol=self.ticket)
+        #self.contract = Future(self.ticket, self.last, self.exch)
         self.days= {0: 'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 6:'Sunday'}
 
     def connect(self):
         '''Connects to IB Gateway or TWS.'''
         ib.connect('127.0.0.1', 7497, clientId=self.clientid)
+        ib.qualifyContracts(self.contract)
 
     def empty_df(self):
         '''Creates and empty dataframe.'''
@@ -56,16 +58,18 @@ class Topo:
         saves the dataframes. If is an opening starts recording the data.'''
         self.now = datetime.now()
         #Market Intraday Close
-        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 8) & (self.now.minute == 16) & (self.now.second == 20):
+        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 9)\
+             & (self.now.minute == 51) & (self.now.second == 20):
             sun_open.pause()
             self.cancelation()
             self.savedata()
         #Market Intraday Open
-        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 8) & (self.now.minute == 16) & (self.now.second == 50):
+        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 9)\
+             & (self.now.minute == 51) & (self.now.second == 50):
             self.empty_df()
             self.recorder()
         #Market Friday Close
-        elif (self.now.weekday()==2) & (self.now.hour == 8) & (self.now.minute == 17):
+        elif (self.now.weekday()==2) & (self.now.hour == 9) & (self.now.minute == 53):
             self.cancelation()
             self.savedata()
             ib.disconnect()
@@ -77,7 +81,7 @@ class Topo:
 
 if __name__ == '__main__':
 
-    #ib = IB()
+    ib = IB()
     juan = Topo()
 
     juan.connect()
@@ -85,7 +89,7 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
     time_job = scheduler.add_job(juan.current_time, 'interval', seconds=1)
-    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=2, hour=8, minute=16) #Market Sunday Open
+    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=2, hour=9, minute=51) #Market Sunday Open
     scheduler.start()
 
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
