@@ -18,12 +18,10 @@ class Topo:
 
     def __init__(self):
         '''Initializes the topo atribuites.'''
-        self.clientid = input('\tID: ')
+        self.clientid = input('\tClient ID: ')
         self.ticket = input('\tTicket: ')
-        #self.last = input('\tContract Expiration: ')
         self.exch = input('\tExchange: ')
         self.contract = Contract(secType='CONTFUT', exchange=self.exch, symbol=self.ticket)
-        #self.contract = Future(self.ticket, self.last, self.exch)
         self.days= {0: 'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 6:'Sunday'}
 
     def connect(self):
@@ -47,11 +45,11 @@ class Topo:
 
     def cancelation(self):
         '''Stops the live tick subscriptions.'''
-        ib.cancelTickByTickData(self.ticker, self.contract, 'BidAsk')
+        ib.cancelTickByTickData(self.contract, 'BidAsk')
 
     def savedata(self):
         '''Saves the dataframe in the specified location.'''
-        self.df.to_csv('C:/Users/MiloZB/Desktop/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
+        self.df.to_csv('/home/milo/Dropbox/Codigos/Data/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
 
     def current_time(self):
         '''Checks if the current time is an opening or closing trading hour. Then, if is a closing cancel the suscription for data and
