@@ -49,25 +49,26 @@ class Topo:
 
     def savedata(self):
         '''Saves the dataframe in the specified location.'''
-        self.df.to_json(r'/home/milo/Dropbox/Codigos/Data/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
+        self.df.set_index('time', inplace=True)
+        self.df.to_csv('/home/milo/Downloads/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
 
     def current_time(self):
         '''Checks if the current time is an opening or closing trading hour. Then, if is a closing cancel the suscription for data and
         saves the dataframes. If is an opening starts recording the data.'''
         self.now = datetime.now()
         #Market Intraday Close
-        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 15)\
-             & (self.now.minute == 14) & (self.now.second == 0):
+        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 14)\
+             & (self.now.minute == 24) & (self.now.second == 0):
             sun_open.pause()
             self.cancelation()
             self.savedata()
         #Market Intraday Open
-        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 15)\
-             & (self.now.minute == 31) & (self.now.second == 0):
+        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 14)\
+             & (self.now.minute == 25) & (self.now.second == 0):
             self.empty_df()
             self.recorder()
         #Market Friday Close
-        elif (self.now.weekday()==4) & (self.now.hour == 15) & (self.now.minute == 59):
+        elif (self.now.weekday()==0) & (self.now.hour == 14) & (self.now.minute == 26):
             self.cancelation()
             self.savedata()
             ib.disconnect()
@@ -87,7 +88,7 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
     time_job = scheduler.add_job(juan.current_time, 'interval', seconds=1)
-    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=6, hour=17, minute=0) #Market Sunday Open
+    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=0, hour=14, minute=23) #Market Sunday Open
     scheduler.start()
 
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
