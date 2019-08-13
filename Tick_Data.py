@@ -36,7 +36,7 @@ class Topo:
     def onPendingTickers(self, ticker):
         """Creates a intermedian dataframe and filter a list of tickers then add them to a new dataframe."""
         self.df2 = util.df(ticker)
-        self.df = self.df.append(self.df2.loc[:,['time','bid', 'bidSize', 'ask', 'askSize']])
+        self.df = self.df.append(self.df2.loc[:,['time','bid', 'bidSize', 'ask', 'askSize']], sort=False)
 
     def recorder(self):
         """Request a live tick-by-tick updates."""
@@ -50,28 +50,27 @@ class Topo:
     def savedata(self):
         '''Saves the dataframe in the specified location.'''
         self.df.set_index('time', inplace=True)
-        self.df.to_csv('/home/milo/Downloads/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
+        self.df.to_csv('/home/camilo/Dropbox/Streaming/Week3/{}_{}_{}_{}.csv'.format(self.ticket,self.days[self.now.weekday()],self.now.hour,self.now.minute))
 
     def current_time(self):
         '''Checks if the current time is an opening or closing trading hour. Then, if is a closing cancel the suscription for data and
         saves the dataframes. If is an opening starts recording the data.'''
         self.now = datetime.now()
         #Market Intraday Close
-        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 14)\
-             & (self.now.minute == 24) & (self.now.second == 0):
+        if ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 16)\
+             & (self.now.minute == 14) & (self.now.second == 0):
+            self.savedata()
             sun_open.pause()
             self.cancelation()
-            self.savedata()
         #Market Intraday Open
-        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 14)\
-             & (self.now.minute == 25) & (self.now.second == 0):
+        elif ((self.now.weekday() == 0)|(self.now.weekday() == 1)|(self.now.weekday() == 2) |(self.now.weekday() == 3)) & (self.now.hour == 16)\
+             & (self.now.minute == 30) & (self.now.second == 0):
             self.empty_df()
             self.recorder()
         #Market Friday Close
-        elif (self.now.weekday()==0) & (self.now.hour == 14) & (self.now.minute == 26):
-            self.cancelation()
+        elif (self.now.weekday()==4) & (self.now.hour == 16) & (self.now.minute == 59):
             self.savedata()
-            ib.disconnect()
+            self.cancelation()
             time_job.pause()
             try:
                 sys.exit()
@@ -88,7 +87,7 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
     time_job = scheduler.add_job(juan.current_time, 'interval', seconds=1)
-    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=0, hour=14, minute=23) #Market Sunday Open
+    sun_open = scheduler.add_job(juan.recorder, 'cron', day_of_week=6, hour=18, minute=0) #Market Sunday Open
     scheduler.start()
 
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
