@@ -31,21 +31,21 @@ class Topo:
 
     def empty_df(self):
         '''Creates and empty dataframe.'''
-        self.df= pd.DataFrame(columns=['time','bid', 'bidSize', 'ask', 'askSize'])
+        self.df= pd.DataFrame(columns=['time','last', 'lastSize',])
 
     def onPendingTickers(self, ticker):
         """Creates a intermedian dataframe and filter a list of tickers then add them to a new dataframe."""
         self.df2 = util.df(ticker)
-        self.df = self.df.append(self.df2.loc[:,['time','bid', 'bidSize', 'ask', 'askSize']], sort=False)
+        self.df = self.df.append(self.df2.loc[:,['time','last', 'lastSize']], sort=False)
 
     def recorder(self):
         """Request a live tick-by-tick updates."""
-        self.ticker = ib.reqTickByTickData(self.contract, 'BidAsk')
+        self.ticker = ib.reqTickByTickData(self.contract, 'Last')
         ib.pendingTickersEvent += self.onPendingTickers
 
     def cancelation(self):
         '''Stops the live tick subscriptions.'''
-        ib.cancelTickByTickData(self.contract, 'BidAsk')
+        ib.cancelTickByTickData(self.contract, 'Last')
 
     def savedata(self):
         '''Saves the dataframe in the specified location.'''
